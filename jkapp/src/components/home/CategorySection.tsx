@@ -11,15 +11,7 @@ const CATEGORIES: Category[] = [
       'https://lh3.googleusercontent.com/aida-public/AB6AXuDQuopGLiYD921ZwK9miWxQrXvweCjfeFThVKJ_c2gLNKnv0Ti9eDqNbXHdUHwLQuHQ8lriuCW-_FAuPwDbcQNqQRmNr5X-8rupryn64VCd9Hw-6ODHuVGeRkuEdiL7e08HorIIqFnpfk6Wp81JDqi3mTzSKtyF7Bf_TutUm6fyN-Il_G7Wok52h6xa-ASqn04PYhU1OZ5vY-3ypWPRxXAAWy19TjKLvnnReD72_mKrQKM-eMSS2P64T6z1hcXZbAmiSB1-XOWuaovc',
     imageAlt: 'Tarjetas y circuitos de televisión',
   },
-  {
-    id: 'repuestos',
-    name: 'Repuestos de TV',
-    icon: 'build',
-    itemCount: 318,
-    imageUrl:
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuDCVuPlnyHFbE3sMGtT3QAQW5DdftPKiCmHnu39E0i1zKgALNrnkIwyCMX262lS68g2i--c7B28CPxkHSczZJDRhyKqHOFm48RHTcrAYmjo9ujKPbWRqiqJ1YsNj7wJDlpFQI7EHTjjelCohsxnOmL0oDLCgSio3JGUNca_iVAroMCJo1Iig3QBh1YaymZqOs_5fS3yykk3c208AGLyb4py0dFNlKRAr7nt9vhLi9C5mMTUUjNmJz4Ar0xSZlDNADlSwN9xOAU1fsrs',
-    imageAlt: 'Repuestos y componentes de televisión',
-  },
+
   {
     id: 'televisores',
     name: 'Televisores Completos',
@@ -38,7 +30,7 @@ interface CategorySectionProps {
 export function CategorySection({ onCategoryClick }: CategorySectionProps) {
   return (
     <section className="space-y-md">
-      <h2 className="font-headline-sm text-on-surface">Categories</h2>
+      <h2 className="font-headline-sm text-on-surface">Categorias</h2>
       <div className="grid grid-cols-1 gap-md">
         {CATEGORIES.map((category) => (
           <CategoryCard key={category.id} category={category} onClick={onCategoryClick} />

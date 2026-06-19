@@ -6,20 +6,22 @@ import { RecentlyAddedSection } from '../../components/home/RecentlyAddedSection
 
 interface HomePageProps {
   onTabChange?: (tab: string) => void
+  onCategorySelect?: (categoryId: string) => void
+  onAddProduct?: () => void
 }
 
-export function HomePage({ onTabChange }: HomePageProps) {
+export function HomePage({ onTabChange, onCategorySelect, onAddProduct }: HomePageProps) {
   return (
     <div className="bg-background text-on-background min-h-screen pb-32">
       <TopAppBar
-        title="TV Inventory"
+        title="Inventario JK"
 
       />
       <main className="px-margin-mobile pt-lg space-y-lg">
-        <CategorySection />
+        <CategorySection onCategoryClick={onCategorySelect} />
         <RecentlyAddedSection />
       </main>
-      <FloatingActionButton />
+      <FloatingActionButton onClick={onAddProduct} />
       <BottomNavBar activeTab="dashboard" onTabChange={onTabChange} />
     </div>
   )

@@ -48,17 +48,12 @@ interface RecentlyAddedSectionProps {
   onItemClick?: (itemId: string) => void
 }
 
-export function RecentlyAddedSection({ onSeeAll, onItemClick }: RecentlyAddedSectionProps) {
+export function RecentlyAddedSection({ onItemClick }: RecentlyAddedSectionProps) {
   return (
     <section className="space-y-md">
       <div className="flex justify-between items-center">
-        <h2 className="font-headline-sm text-on-surface">Recently Added</h2>
-        <button
-          onClick={onSeeAll}
-          className="text-primary font-label-lg hover:bg-primary/5 px-2 py-1 rounded transition-colors"
-        >
-          See All
-        </button>
+        <h2 className="font-headline-sm text-on-surface">Visto recientemente</h2>
+
       </div>
       <div className="flex overflow-x-auto gap-md hide-scrollbar pb-md -mx-margin-mobile px-margin-mobile">
         {MOCK_ITEMS.map((item) => (

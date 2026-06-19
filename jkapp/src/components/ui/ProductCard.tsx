@@ -26,9 +26,7 @@ export function ProductCard({ item, onClick }: ProductCardProps) {
             </span>
           </div>
         )}
-        <span className="absolute top-2 right-2 bg-primary text-on-primary text-[10px] font-bold px-2 py-1 rounded-full uppercase">
-          New
-        </span>
+
       </div>
       <div className="p-md space-y-xs">
         <p className="font-label-sm text-primary uppercase">{item.subcategory}</p>
