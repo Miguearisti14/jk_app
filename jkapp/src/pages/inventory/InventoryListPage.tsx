@@ -14,17 +14,12 @@ const CATEGORY_LABELS: Record<CategoryId, string> = {
   televisores: 'Televisores',
 }
 
-function toStockStatus(quantity: number): StockStatus {
-  if (quantity === 0) return 'out_of_stock'
-  if (quantity <= 5) return 'low_stock'
-  return 'in_stock'
-}
 
 async function fetchByCategory(category: CategoryId): Promise<InventoryItem[]> {
   if (category === 'tarjetas') {
     const { data, error } = await supabase
       .from('tarjetas')
-      .select('id_tarjeta, modelo, precio, cantidad, marcas(descripcion_marca), inventarios(descripcion_inventario), tipos_tarjeta(descripcion_tipo)')
+      .select('id_tarjeta, modelo, precio, cantidad, marcas(descripcion_marca), inventarios(descripcion_inventario), tipos_tarjeta(descripcion_tipo), compatibilidad')
 
     if (error) throw error
 
@@ -35,8 +30,8 @@ async function fetchByCategory(category: CategoryId): Promise<InventoryItem[]> {
       subcategory: t.tipos_tarjeta?.descripcion_tipo ?? '',
       price: t.precio,
       stock_quantity: t.cantidad,
-      stock_status: toStockStatus(t.cantidad),
       sku: t.modelo,
+      compatibility: t.compatibilidad ?? null,
     }))
   }
 
@@ -86,10 +81,10 @@ export function InventoryListPage() {
   const filters = ['Todos', ...Array.from(new Set(items.map((i) => i.subcategory)))]
 
   const visibleItems = items.filter((item) => {
-    if (activeFilter !== 'Todos' && item.subcategory !== activeFilter) return false
+    if (activeFilter !== 'Todos' && item.compatibility?.includes(activeFilter)) return false
     if (searchTerm) {
       const q = searchTerm.toLowerCase()
-      return item.name.toLowerCase().includes(q) || item.sku.toLowerCase().includes(q)
+      return item.name.toLowerCase().includes(q) || item.compatibility?.toLowerCase().includes(q)
     }
     return true
   })
@@ -155,7 +150,8 @@ export function InventoryListPage() {
           )}
         </div>
       </main>
-      <FloatingActionButton />
+      <FloatingActionButton onClick={() => navigate('/products/add')} />
+
       <BottomNavBar />
     </div>
   )

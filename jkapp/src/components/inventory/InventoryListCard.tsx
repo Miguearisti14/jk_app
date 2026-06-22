@@ -1,5 +1,5 @@
 import type { InventoryItem } from '../../types/inventory'
-import { StockCountBadge } from '../ui/StockCountBadge'
+
 
 interface InventoryListCardProps {
   item: InventoryItem
@@ -24,10 +24,11 @@ export function InventoryListCard({ item, onClick }: InventoryListCardProps) {
             </span>
           </div>
           <p className="font-body-md text-on-surface-variant">{item.subcategory}</p>
+          <p className="font-body-md text-on-surface">${item.price.toFixed(2)}</p>
+          <p className="font-body-sm text-on-surface-variant line-clamp-2">{item.compatibility}</p>
         </div>
         <div className="flex justify-between items-end">
-          <span className="font-headline-sm text-primary">${item.price.toFixed(2)}</span>
-          <StockCountBadge quantity={item.stock_quantity} status={item.stock_status} />
+
         </div>
       </div>
     </div>

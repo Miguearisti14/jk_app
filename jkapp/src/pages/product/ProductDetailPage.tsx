@@ -2,8 +2,6 @@ import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { TopAppBar } from '../../components/layout/TopAppBar'
-import { FloatingActionButton } from '../../components/ui/FloatingActionButton'
-import { ProductHeroImage } from '../../components/product/ProductHeroImage'
 import { StockLevelCard } from '../../components/product/StockLevelCard'
 import { LocationCard } from '../../components/product/LocationCard'
 import { CompatibilitySection } from '../../components/product/CompatibilitySection'
@@ -37,7 +35,6 @@ async function fetchProductDetail(categoryId: CategoryId, productId: string): Pr
       subcategory: (data.tipos_tarjeta as any)?.descripcion_tipo ?? '',
       price: data.precio,
       stock_quantity: data.cantidad,
-      stock_status: toStockStatus(data.cantidad),
       sku: data.modelo,
       min_threshold: 5,
       location: {
@@ -64,7 +61,6 @@ async function fetchProductDetail(categoryId: CategoryId, productId: string): Pr
       subcategory: (data.estados as any)?.descripcion_estado ?? '',
       price: data.precio,
       stock_quantity: 1,
-      stock_status: 'in_stock',
       sku: data.modelo,
       min_threshold: 1,
     }

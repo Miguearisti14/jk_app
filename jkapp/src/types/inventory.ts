@@ -18,8 +18,8 @@ export interface InventoryItem {
   subcategory: string
   price: number
   stock_quantity: number
-  stock_status: StockStatus
   sku: string
+  compatibility?: string | null
 }
 
 export interface ProductLocation {
@@ -30,6 +30,6 @@ export interface ProductLocation {
 export interface ProductDetail extends InventoryItem {
   min_threshold: number
   imageUrl?: string
-  compatibility?: string[]
+  compatibility?: string
   location?: ProductLocation
 }

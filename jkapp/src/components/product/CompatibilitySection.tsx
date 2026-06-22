@@ -1,5 +1,5 @@
 interface CompatibilitySectionProps {
-  models: string[]
+  models: string
 }
 
 export function CompatibilitySection({ models }: CompatibilitySectionProps) {
@@ -9,7 +9,7 @@ export function CompatibilitySection({ models }: CompatibilitySectionProps) {
         Compatibilidades
       </h3>
       <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-md shadow-sm">
-        <p className="font-body-md text-on-surface">{models.join(', ')}</p>
+        <p className="font-body-md text-on-surface">{models}</p>
       </div>
     </section>
   )
