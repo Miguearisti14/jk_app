@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { TopAppBar } from '../../components/layout/TopAppBar'
 import { ProductTypeSelector } from '../../components/product/ProductTypeSelector'
@@ -14,11 +15,9 @@ import type {
 } from '../../types/database'
 import { TELEVISOR_INIT, TARJETA_INIT } from '../../types/database'
 
-interface AddProductPageProps {
-  onBack: () => void
-}
+export function AddProductPage() {
+  const navigate = useNavigate()
 
-export function AddProductPage({ onBack }: AddProductPageProps) {
   const [productType, setProductType] = useState<ProductType | null>(null)
   const [televisorData, setTelevisorData] = useState<TelevisorFormData>(TELEVISOR_INIT)
   const [tarjetaData, setTarjetaData] = useState<TarjetaFormData>(TARJETA_INIT)
@@ -108,7 +107,7 @@ export function AddProductPage({ onBack }: AddProductPageProps) {
         if (err) throw err
       }
       setSuccess(true)
-      setTimeout(() => onBack(), 1200)
+      setTimeout(() => navigate(-1), 1200)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al guardar el producto')
     } finally {
@@ -122,7 +121,7 @@ export function AddProductPage({ onBack }: AddProductPageProps) {
         title="Nuevo Producto"
         leading={
           <button
-            onClick={onBack}
+            onClick={() => navigate(-1)}
             className="p-2 rounded-full hover:bg-surface-container-low active:scale-95 transition-all"
           >
             <span className="material-symbols-outlined text-on-surface-variant">arrow_back</span>
@@ -191,7 +190,7 @@ export function AddProductPage({ onBack }: AddProductPageProps) {
             )}
           </button>
           <button
-            onClick={onBack}
+            onClick={() => navigate(-1)}
             disabled={saving}
             className="w-full h-touch-target-min bg-transparent text-primary rounded-xl font-label-lg text-label-lg font-bold hover:bg-surface-container-high active:scale-95 transition-all duration-150 disabled:opacity-50"
           >

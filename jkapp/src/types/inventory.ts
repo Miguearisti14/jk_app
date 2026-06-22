@@ -1,6 +1,6 @@
 export type StockStatus = 'in_stock' | 'low_stock' | 'out_of_stock'
 
-export type CategoryId = 'tarjetas' | 'repuestos' | 'televisores'
+export type CategoryId = 'tarjetas' | 'televisores'
 
 export interface Category {
   id: CategoryId
@@ -19,9 +19,7 @@ export interface InventoryItem {
   price: number
   stock_quantity: number
   stock_status: StockStatus
-  image_url?: string
   sku: string
-  created_at: string
 }
 
 export interface ProductLocation {
@@ -31,6 +29,7 @@ export interface ProductLocation {
 
 export interface ProductDetail extends InventoryItem {
   min_threshold: number
+  imageUrl?: string
   compatibility?: string[]
   location?: ProductLocation
 }

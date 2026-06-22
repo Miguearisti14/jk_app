@@ -1,21 +1,29 @@
+import { useNavigate, useLocation } from 'react-router-dom'
+
 type NavItem = {
   id: string
   label: string
   icon: string
+  path: string
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { id: 'dashboard', label: 'Home', icon: 'dashboard' },
-  { id: 'inventory', label: 'Inventario', icon: 'inventory_2' },
-  { id: 'scanner', label: 'Subir', icon: 'upload' },
+  { id: 'dashboard', label: 'Home', icon: 'dashboard', path: '/' },
+  { id: 'inventory', label: 'Inventario', icon: 'inventory_2', path: '/inventory' },
+  { id: 'scanner', label: 'Subir', icon: 'upload', path: '/products/add' },
 ]
 
-interface BottomNavBarProps {
-  activeTab?: string
-  onTabChange?: (tab: string) => void
+function getActiveTab(pathname: string): string {
+  if (pathname.startsWith('/inventory')) return 'inventory'
+  if (pathname.startsWith('/products')) return 'scanner'
+  return 'dashboard'
 }
 
-export function BottomNavBar({ activeTab = 'dashboard', onTabChange }: BottomNavBarProps) {
+export function BottomNavBar() {
+  const navigate = useNavigate()
+  const { pathname } = useLocation()
+  const activeTab = getActiveTab(pathname)
+
   return (
     <nav className="fixed bottom-0 w-full z-50 flex justify-around items-center py-2 px-gutter-mobile bg-surface-container shadow-sm">
       {NAV_ITEMS.map((item) => {
@@ -23,7 +31,7 @@ export function BottomNavBar({ activeTab = 'dashboard', onTabChange }: BottomNav
         return (
           <button
             key={item.id}
-            onClick={() => onTabChange?.(item.id)}
+            onClick={() => navigate(item.path)}
             className={`flex flex-col items-center justify-center px-4 py-1 rounded-xl transition-all active:scale-90 duration-200 ${isActive
               ? 'bg-primary-container text-on-primary-container'
               : 'text-on-surface-variant hover:bg-surface-container-high'

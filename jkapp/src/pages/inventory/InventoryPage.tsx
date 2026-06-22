@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom'
 import { TopAppBar } from '../../components/layout/TopAppBar'
 import { BottomNavBar } from '../../components/layout/BottomNavBar'
 import { FloatingActionButton } from '../../components/ui/FloatingActionButton'
@@ -24,18 +25,12 @@ const QUICK_ACTIONS = [
   { id: 'reportes', icon: 'analytics', label: 'Reportes' },
 ]
 
-interface InventoryPageProps {
-  onTabChange?: (tab: string) => void
-  onCategorySelect?: (categoryId: string) => void
-}
+export function InventoryPage() {
+  const navigate = useNavigate()
 
-export function InventoryPage({ onTabChange, onCategorySelect }: InventoryPageProps) {
   return (
     <div className="bg-background text-on-background min-h-screen pb-32">
-      <TopAppBar
-        title="TV Inventory"
-
-      />
+      <TopAppBar title="TV Inventory" />
       <main className="px-margin-mobile pt-xl">
         <div className="mb-lg space-y-xs">
           <h2 className="font-headline-md text-on-surface">Bienvenido</h2>
@@ -48,7 +43,7 @@ export function InventoryPage({ onTabChange, onCategorySelect }: InventoryPagePr
               icon={cat.icon}
               title={cat.title}
               description={cat.description}
-              onClick={() => onCategorySelect?.(cat.id)}
+              onClick={() => navigate(`/inventory/${cat.id}`)}
             />
           ))}
         </div>
@@ -59,7 +54,7 @@ export function InventoryPage({ onTabChange, onCategorySelect }: InventoryPagePr
         </div>
       </main>
       <FloatingActionButton />
-      <BottomNavBar activeTab="inventory" onTabChange={onTabChange} />
+      <BottomNavBar />
     </div>
   )
 }

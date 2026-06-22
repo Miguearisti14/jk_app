@@ -36,7 +36,7 @@ export function StockLevelCard({ initialQuantity, minThreshold, onUpdate }: Stoc
     <div className="bg-surface-container-lowest border border-outline-variant p-md rounded-xl shadow-sm flex flex-col justify-between">
       <div className="flex items-center gap-sm mb-md">
         <span className="material-symbols-outlined text-primary">inventory_2</span>
-        <h3 className="font-label-lg text-on-surface">Stock Level</h3>
+        <h3 className="font-label-lg text-on-surface">Unidades</h3>
       </div>
       <div className="flex items-center justify-between bg-surface-container-low rounded-xl p-xs border border-outline-variant">
         <button
@@ -56,9 +56,7 @@ export function StockLevelCard({ initialQuantity, minThreshold, onUpdate }: Stoc
           <span className="material-symbols-outlined">add</span>
         </button>
       </div>
-      <p className="font-label-sm text-on-surface-variant mt-sm">
-        Minimum threshold: {minThreshold} units
-      </p>
+
     </div>
   )
 }
