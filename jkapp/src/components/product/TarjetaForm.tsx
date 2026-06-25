@@ -31,7 +31,7 @@ export function TarjetaForm({ data, marcas, inventarios, onChange }: TarjetaForm
       />
 
       <div className="grid grid-cols-2 gap-sm">
-        <FormField label="Caja N°" value={data.caja} onChange={set('caja')} type="number" placeholder="0" min={0} />
+        <FormField label="Caja N°" value={data.caja} onChange={set('caja')} placeholder="Ej: 5, A-12" />
         <FormField
           label="Cantidad"
           value={data.cantidad}

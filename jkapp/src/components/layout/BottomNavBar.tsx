@@ -10,12 +10,12 @@ type NavItem = {
 const NAV_ITEMS: NavItem[] = [
   { id: 'dashboard', label: 'Home', icon: 'dashboard', path: '/' },
   { id: 'inventory', label: 'Inventario', icon: 'inventory_2', path: '/inventory' },
-  { id: 'scanner', label: 'Subir', icon: 'upload', path: '/products/add' },
+  { id: 'scanner', label: 'Subir', icon: 'upload', path: '/upload' },
 ]
 
 function getActiveTab(pathname: string): string {
   if (pathname.startsWith('/inventory')) return 'inventory'
-  if (pathname.startsWith('/products')) return 'scanner'
+  if (pathname.startsWith('/upload')) return 'scanner'
   return 'dashboard'
 }
 

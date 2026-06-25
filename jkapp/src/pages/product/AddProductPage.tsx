@@ -98,7 +98,7 @@ export function AddProductPage() {
       } else {
         const { error: err } = await supabase.from('tarjetas').insert({
           inventario: parseInt(tarjetaData.inventario),
-          caja: parseInt(tarjetaData.caja),
+          caja: tarjetaData.caja,
           cantidad: parseInt(tarjetaData.cantidad),
           marca: parseInt(tarjetaData.marca),
           modelo: tarjetaData.modelo.trim(),
