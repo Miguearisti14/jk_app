@@ -18,6 +18,8 @@ import { TELEVISOR_INIT, TARJETA_INIT } from '../../types/database'
 export function AddProductPage() {
   const navigate = useNavigate()
 
+  useEffect(() => { window.scrollTo(0, 0) }, [])
+
   const [productType, setProductType] = useState<ProductType | null>(null)
   const [televisorData, setTelevisorData] = useState<TelevisorFormData>(TELEVISOR_INIT)
   const [tarjetaData, setTarjetaData] = useState<TarjetaFormData>(TARJETA_INIT)

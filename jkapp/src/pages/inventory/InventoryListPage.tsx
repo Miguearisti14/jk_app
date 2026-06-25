@@ -81,10 +81,10 @@ export function InventoryListPage() {
   const filters = ['Todos', ...Array.from(new Set(items.map((i) => i.subcategory)))]
 
   const visibleItems = items.filter((item) => {
-    if (activeFilter !== 'Todos' && item.compatibility?.includes(activeFilter)) return false
+    if (activeFilter !== 'Todos' && item.subcategory !== activeFilter) return false
     if (searchTerm) {
       const q = searchTerm.toLowerCase()
-      return item.name.toLowerCase().includes(q) || item.compatibility?.toLowerCase().includes(q)
+      return item.name.toLowerCase().includes(q) || item.sku.toLowerCase().includes(q)
     }
     return true
   })

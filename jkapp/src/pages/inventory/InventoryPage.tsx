@@ -1,9 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { TopAppBar } from '../../components/layout/TopAppBar'
 import { BottomNavBar } from '../../components/layout/BottomNavBar'
-import { FloatingActionButton } from '../../components/ui/FloatingActionButton'
 import { CategorySelectionCard } from '../../components/inventory/CategorySelectionCard'
-import { QuickActionChip } from '../../components/inventory/QuickActionChip'
 
 const INVENTORY_CATEGORIES = [
   {
@@ -20,21 +18,16 @@ const INVENTORY_CATEGORIES = [
   },
 ]
 
-const QUICK_ACTIONS = [
-  { id: 'recientes', icon: 'history', label: 'Recientes' },
-  { id: 'reportes', icon: 'analytics', label: 'Reportes' },
-]
 
 export function InventoryPage() {
   const navigate = useNavigate()
 
   return (
     <div className="bg-background text-on-background min-h-screen pb-32">
-      <TopAppBar title="TV Inventory" />
+      <TopAppBar title="Inventario JK" />
       <main className="px-margin-mobile pt-xl">
         <div className="mb-lg space-y-xs">
-          <h2 className="font-headline-md text-on-surface">Bienvenido</h2>
-          <p className="font-body-lg text-on-surface-variant">¿Qué desea gestionar hoy?</p>
+          <p className="font-body-lg text-on-surface-variant">¿Qué desea mirar hoy?</p>
         </div>
         <div className="grid grid-cols-1 gap-md">
           {INVENTORY_CATEGORIES.map((cat) => (
@@ -47,13 +40,8 @@ export function InventoryPage() {
             />
           ))}
         </div>
-        <div className="mt-xl grid grid-cols-2 gap-sm">
-          {QUICK_ACTIONS.map((action) => (
-            <QuickActionChip key={action.id} icon={action.icon} label={action.label} />
-          ))}
-        </div>
+
       </main>
-      <FloatingActionButton />
       <BottomNavBar />
     </div>
   )

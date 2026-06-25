@@ -2,10 +2,9 @@ import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { TopAppBar } from '../../components/layout/TopAppBar'
-import { StockLevelCard } from '../../components/product/StockLevelCard'
-import { LocationCard } from '../../components/product/LocationCard'
-import { CompatibilitySection } from '../../components/product/CompatibilitySection'
 import { ProductActionBar } from '../../components/product/ProductActionBar'
+import { TarjetaDetailsCard } from '../../components/product/TarjetaDetailsCard'
+import { TvDetailsCard } from '../../components/product/TvDetailsCard'
 import type { CategoryId, ProductDetail, StockStatus } from '../../types/inventory'
 
 function toStockStatus(quantity: number): StockStatus {
@@ -63,6 +62,8 @@ async function fetchProductDetail(categoryId: CategoryId, productId: string): Pr
       stock_quantity: 1,
       sku: data.modelo,
       min_threshold: 1,
+      smart: data.smart,
+      observaciones: data.observaciones,
     }
   }
 
@@ -194,20 +195,13 @@ export function ProductDetailPage() {
           <p className="font-body-md text-on-surface-variant">${product.price.toFixed(2)}</p>
         </section>
 
-        <section className="px-margin-mobile mt-lg grid grid-cols-1 gap-md">
-          <StockLevelCard
-            initialQuantity={product.stock_quantity}
-            minThreshold={product.min_threshold}
-            onUpdate={setCurrentQuantity}
-          />
-          {product.location && (
-            <LocationCard location={product.location} sku={product.sku} id={product.id} />
+        <section className="px-margin-mobile mt-lg">
+          {product.category === 'tarjetas' ? (
+            <TarjetaDetailsCard product={product} onQuantityChange={setCurrentQuantity} />
+          ) : (
+            <TvDetailsCard product={product} />
           )}
         </section>
-
-        {product.compatibility && product.compatibility.length > 0 && (
-          <CompatibilitySection models={product.compatibility} />
-        )}
       </main>
 
       <ProductActionBar

@@ -32,4 +32,6 @@ export interface ProductDetail extends InventoryItem {
   imageUrl?: string
   compatibility?: string
   location?: ProductLocation
+  smart?: boolean | null
+  observaciones?: string | null
 }
