@@ -17,7 +17,7 @@ async function fetchProductDetail(categoryId: CategoryId, productId: string): Pr
   if (categoryId === 'tarjetas') {
     const { data, error } = await supabase
       .from('tarjetas')
-      .select('id_tarjeta, numero_tarjeta, modelo, precio, cantidad, caja, compatibilidad, observaciones, marcas(descripcion_marca), inventarios(descripcion_inventario), tipos_tarjeta(descripcion_tipo)')
+      .select('id_tarjeta, numero_tarjeta, modelo, precio, cantidad, caja, compatibilidad, observaciones, inventarios(descripcion_inventario), tipos_tarjeta(descripcion_tipo)')
       .eq('id_tarjeta', productId)
       .single()
 
@@ -30,7 +30,7 @@ async function fetchProductDetail(categoryId: CategoryId, productId: string): Pr
     return {
       id: String(data.id_tarjeta),
       numero_tarjeta: data.numero_tarjeta,
-      name: `${(data.marcas as any)?.descripcion_marca ?? ''} ${data.modelo}`.trim(),
+      name: (data.modelo ?? '').trim() || `Tarjeta #${data.numero_tarjeta}`,
       category: 'tarjetas',
       subcategory: (data.tipos_tarjeta as any)?.descripcion_tipo ?? '',
       price: data.precio,

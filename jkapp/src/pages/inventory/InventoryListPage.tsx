@@ -19,24 +19,23 @@ async function fetchByCategory(category: CategoryId): Promise<InventoryItem[]> {
   if (category === 'tarjetas') {
     const { data, error } = await supabase
       .from('tarjetas')
-      .select('id_tarjeta, numero_tarjeta, modelo, precio, cantidad, marcas(descripcion_marca), inventarios(descripcion_inventario), tipos_tarjeta(descripcion_tipo), compatibilidad')
+      .select('id_tarjeta, numero_tarjeta, modelo, precio, cantidad, inventarios(descripcion_inventario), tipos_tarjeta(descripcion_tipo), compatibilidad')
 
     if (error) throw error
 
     return (data ?? []).map((t: any) => {
-      const marca = t.marcas?.descripcion_marca ?? ''
-      const modelo = t.modelo ?? ''
-      const name = `${marca} ${modelo}`.trim() || `Tarjeta #${t.numero_tarjeta}`
+      const name = (t.modelo ?? '').trim() || `Tarjeta #${t.numero_tarjeta}`
       return {
-      id: String(t.id_tarjeta),
-      name,
-      category: 'tarjetas',
-      subcategory: t.tipos_tarjeta?.descripcion_tipo ?? '',
-      price: t.precio,
-      stock_quantity: t.cantidad,
-      sku: t.modelo,
-      compatibility: t.compatibilidad ?? null,
-    }))
+        id: String(t.id_tarjeta),
+        name,
+        category: 'tarjetas',
+        subcategory: t.tipos_tarjeta?.descripcion_tipo ?? '',
+        price: t.precio,
+        stock_quantity: t.cantidad,
+        sku: t.modelo,
+        compatibility: t.compatibilidad ?? null,
+      }
+    })
   }
 
   if (category === 'televisores') {
