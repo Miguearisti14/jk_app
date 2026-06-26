@@ -20,6 +20,7 @@ export interface InventoryItem {
   stock_quantity: number
   sku: string
   compatibility?: string | null
+  numero_tarjeta?: string | null
 }
 
 export interface ProductLocation {
@@ -29,10 +30,9 @@ export interface ProductLocation {
 
 export interface ProductDetail extends InventoryItem {
   min_threshold: number
-  imageUrl?: string
   compatibility?: string
   location?: ProductLocation
   smart?: boolean | null
   observaciones?: string | null
-  numero_tarjeta?: number | null
+  numero_tarjeta?: string
 }

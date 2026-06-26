@@ -34,6 +34,7 @@ async function fetchByCategory(category: CategoryId): Promise<InventoryItem[]> {
         stock_quantity: t.cantidad,
         sku: t.modelo,
         compatibility: t.compatibilidad ?? null,
+        numero_tarjeta: t.numero_tarjeta ?? null,
       }
     })
   }
@@ -69,6 +70,8 @@ export function InventoryListPage() {
   const [error, setError] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [activeFilter, setActiveFilter] = useState('Todos')
+  const [currentPage, setCurrentPage] = useState(1)
+  const PAGE_SIZE = 10
 
   useEffect(() => {
     if (!categoryId) return
@@ -86,11 +89,17 @@ export function InventoryListPage() {
   const visibleItems = items.filter((item) => {
     if (activeFilter !== 'Todos' && item.subcategory !== activeFilter) return false
     if (searchTerm) {
-      const q = searchTerm.toLowerCase()
-      return item.name.toLowerCase().includes(q) || item.sku.toLowerCase().includes(q)
+      const q = searchTerm.toUpperCase()
+      return item.name.toUpperCase().includes(q)
+        || (item.compatibility ?? '').toUpperCase().includes(q)
+        || String(item.numero_tarjeta ?? '').includes(q)
     }
     return true
   })
+
+  const totalPages = Math.max(1, Math.ceil(visibleItems.length / PAGE_SIZE))
+  const safePage = Math.min(currentPage, totalPages)
+  const pagedItems = visibleItems.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE)
 
   return (
     <div className="bg-background text-on-background min-h-screen pb-32">
@@ -111,7 +120,7 @@ export function InventoryListPage() {
         }
       />
       <main className="px-margin-mobile pt-md space-y-md pb-md">
-        <SearchBar value={searchTerm} onChange={setSearchTerm} placeholder="Buscar por nombre o modelo" />
+        <SearchBar value={searchTerm} onChange={(v) => { setSearchTerm(v); setCurrentPage(1) }} placeholder="Buscar por nombre o modelo" />
 
         {!loading && filters.length > 1 && (
           <div className="flex overflow-x-auto gap-sm hide-scrollbar py-1">
@@ -120,7 +129,7 @@ export function InventoryListPage() {
                 key={filter}
                 label={filter}
                 isActive={activeFilter === filter}
-                onClick={() => setActiveFilter(filter)}
+                onClick={() => { setActiveFilter(filter); setCurrentPage(1) }}
               />
             ))}
           </div>
@@ -143,7 +152,7 @@ export function InventoryListPage() {
               <p className="font-body-md mt-sm">No se encontraron resultados</p>
             </div>
           ) : (
-            visibleItems.map((item) => (
+            pagedItems.map((item) => (
               <InventoryListCard
                 key={item.id}
                 item={item}
@@ -152,6 +161,32 @@ export function InventoryListPage() {
             ))
           )}
         </div>
+
+        {!loading && totalPages > 1 && (
+          <div className="flex items-center justify-between pt-sm">
+            <button
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              disabled={safePage === 1}
+              className="flex items-center gap-xs px-md py-sm rounded-xl font-label-md text-primary disabled:opacity-30 hover:bg-surface-container-low active:scale-95 transition-all"
+            >
+              <span className="material-symbols-outlined text-[20px]">chevron_left</span>
+              Anterior
+            </button>
+
+            <span className="font-body-sm text-on-surface-variant">
+              {safePage} / {totalPages}
+            </span>
+
+            <button
+              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              disabled={safePage === totalPages}
+              className="flex items-center gap-xs px-md py-sm rounded-xl font-label-md text-primary disabled:opacity-30 hover:bg-surface-container-low active:scale-95 transition-all"
+            >
+              Siguiente
+              <span className="material-symbols-outlined text-[20px]">chevron_right</span>
+            </button>
+          </div>
+        )}
       </main>
       <FloatingActionButton onClick={() => navigate('/products/add')} />
 

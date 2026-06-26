@@ -32,7 +32,8 @@ interface ParsedRow {
 
 // ── helpers ─────────────────────────────────────────────────────────────────
 
-function str(v: unknown) { return v != null ? String(v).trim() : '' }
+function str(v: unknown)  { return v != null ? String(v).trim() : '' }
+function norm(v: unknown) { return v != null ? String(v).trim().toUpperCase() : '' }
 
 function parsePrice(v: unknown): number | null {
   const cleaned = str(v).replace(/[$\s,]/g, '')
@@ -43,13 +44,13 @@ function parsePrice(v: unknown): number | null {
 function parseRows(raw: RawRow[]): ParsedRow[] {
   return raw.map((row) => {
     const numero_tarjeta = str(row['#'])
-    const modelo = str(row['NUMERO DE PARTE'])
-    const tipo_tarjeta = str(row['PRODUCTO'])
-    const compatibilidad = str(row['COMPATIBILIDADES'])
-    const cantidad = str(row['U'])
-    const precio = str(row['PRECIO'])
-    const dueno = str(row['DUEÑO'])
-    const caja = str(row['CAJA #'])
+    const modelo         = norm(row['NUMERO DE PARTE'])
+    const tipo_tarjeta   = norm(row['PRODUCTO'])
+    const compatibilidad = norm(row['COMPATIBILIDADES'])
+    const cantidad       = str(row['U'])
+    const precio         = str(row['PRECIO'])
+    const dueno          = norm(row['DUEÑO'])
+    const caja           = norm(row['CAJA #'])
 
     const errors: string[] = []
     if (!numero_tarjeta || isNaN(parseInt(numero_tarjeta))) errors.push('numero')

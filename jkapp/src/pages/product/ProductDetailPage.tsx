@@ -5,13 +5,9 @@ import { TopAppBar } from '../../components/layout/TopAppBar'
 import { ProductActionBar } from '../../components/product/ProductActionBar'
 import { TarjetaDetailsCard } from '../../components/product/TarjetaDetailsCard'
 import { TvDetailsCard } from '../../components/product/TvDetailsCard'
-import type { CategoryId, ProductDetail, StockStatus } from '../../types/inventory'
+import type { CategoryId, ProductDetail } from '../../types/inventory'
 
-function toStockStatus(quantity: number): StockStatus {
-  if (quantity === 0) return 'out_of_stock'
-  if (quantity <= 5) return 'low_stock'
-  return 'in_stock'
-}
+
 
 async function fetchProductDetail(categoryId: CategoryId, productId: string): Promise<ProductDetail> {
   if (categoryId === 'tarjetas') {

@@ -17,7 +17,7 @@ export function TarjetaDetailsCard({ product, onQuantityChange }: TarjetaDetails
         onUpdate={onQuantityChange}
       />
       {product.location && (
-        <LocationCard location={product.location} sku={product.sku} id={product.id} />
+        <LocationCard location={product.location} sku={product.sku} numero_tarjeta={product.numero_tarjeta} />
       )}
       {product.compatibility && (
         <CompatibilitySection models={product.compatibility} />
