@@ -22,6 +22,15 @@ export function TarjetaForm({ data, marcas, inventarios, onChange }: TarjetaForm
         <span className="font-headline-sm text-headline-sm text-on-surface">Datos de la Tarjeta</span>
       </div>
 
+      <FormField
+        label="Número de tarjeta"
+        value={data.numero_tarjeta}
+        onChange={set('numero_tarjeta')}
+        type="number"
+        placeholder="Ej: 42"
+        min={1}
+      />
+
       <FormSelect
         label="Inventario"
         value={data.inventario}

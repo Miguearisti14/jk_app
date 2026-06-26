@@ -34,4 +34,5 @@ export interface ProductDetail extends InventoryItem {
   location?: ProductLocation
   smart?: boolean | null
   observaciones?: string | null
+  numero_tarjeta?: number | null
 }

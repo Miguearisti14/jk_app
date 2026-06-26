@@ -64,6 +64,7 @@ export function AddProductPage() {
   }
 
   const validateTarjeta = (): string | null => {
+    if (!tarjetaData.numero_tarjeta || isNaN(parseInt(tarjetaData.numero_tarjeta))) return 'Ingresa el número de tarjeta'
     if (!tarjetaData.inventario) return 'Selecciona el inventario'
     if (!tarjetaData.caja || parseInt(tarjetaData.caja) < 0) return 'Ingresa el número de caja'
     if (!tarjetaData.cantidad || parseInt(tarjetaData.cantidad) < 0) return 'Ingresa la cantidad'
@@ -97,6 +98,7 @@ export function AddProductPage() {
         if (err) throw err
       } else {
         const { error: err } = await supabase.from('tarjetas').insert({
+          numero_tarjeta: parseInt(tarjetaData.numero_tarjeta),
           inventario: parseInt(tarjetaData.inventario),
           caja: tarjetaData.caja,
           cantidad: parseInt(tarjetaData.cantidad),

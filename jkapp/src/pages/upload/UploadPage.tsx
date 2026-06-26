@@ -19,7 +19,7 @@ interface RawRow {
 }
 
 interface ParsedRow {
-  id_tarjeta: string
+  numero_tarjeta: string
   modelo: string
   tipo_tarjeta: string
   compatibilidad: string
@@ -42,20 +42,21 @@ function parsePrice(v: unknown): number | null {
 
 function parseRows(raw: RawRow[]): ParsedRow[] {
   return raw.map((row) => {
-    const id_tarjeta     = str(row['#'])
-    const modelo         = str(row['NUMERO DE PARTE'])
-    const tipo_tarjeta   = str(row['PRODUCTO'])
+    const numero_tarjeta = str(row['#'])
+    const modelo = str(row['NUMERO DE PARTE'])
+    const tipo_tarjeta = str(row['PRODUCTO'])
     const compatibilidad = str(row['COMPATIBILIDADES'])
-    const cantidad       = str(row['U'])
-    const precio         = str(row['PRECIO'])
-    const dueno          = str(row['DUEÑO'])
-    const caja           = str(row['CAJA #'])
+    const cantidad = str(row['U'])
+    const precio = str(row['PRECIO'])
+    const dueno = str(row['DUEÑO'])
+    const caja = str(row['CAJA #'])
 
     const errors: string[] = []
-    if (!id_tarjeta || isNaN(parseInt(id_tarjeta)))              errors.push('id')
-    if (isNaN(parseInt(cantidad)) || parseInt(cantidad) < 0)     errors.push('cantidad')
+    if (!numero_tarjeta || isNaN(parseInt(numero_tarjeta))) errors.push('numero')
+    if (isNaN(parseInt(cantidad)) || parseInt(cantidad) < 0) errors.push('cantidad')
+    if (caja.length > 20) errors.push('caja muy larga')
 
-    return { id_tarjeta, modelo, tipo_tarjeta, compatibilidad, cantidad, precio, dueno, caja, errors }
+    return { numero_tarjeta, modelo, tipo_tarjeta, compatibilidad, cantidad, precio, dueno, caja, errors }
   })
 }
 
@@ -67,11 +68,11 @@ export function UploadPage() {
   const [fileName, setFileName] = useState<string | null>(null)
   const [rows, setRows] = useState<ParsedRow[]>([])
 
-  const [tiposMap, setTiposMap]           = useState<Map<string, number>>(new Map())
+  const [tiposMap, setTiposMap] = useState<Map<string, number>>(new Map())
   const [inventariosMap, setInventariosMap] = useState<Map<string, number>>(new Map())
 
-  const [uploading, setUploading]   = useState(false)
-  const [result, setResult]         = useState<{ ok: number; failed: number } | null>(null)
+  const [uploading, setUploading] = useState(false)
+  const [result, setResult] = useState<{ ok: number; failed: number } | null>(null)
   const [uploadError, setUploadError] = useState<string | null>(null)
 
   useEffect(() => {
@@ -117,7 +118,7 @@ export function UploadPage() {
     if (file) processFile(file)
   }
 
-  const validRows   = rows.filter(r => r.errors.length === 0)
+  const validRows = rows.filter(r => r.errors.length === 0)
   const invalidRows = rows.filter(r => r.errors.length > 0)
 
   const handleUpload = async () => {
@@ -125,52 +126,54 @@ export function UploadPage() {
     setUploading(true)
     setUploadError(null)
 
-    // Auto-crear tipos_tarjeta que no existan en la tabla
+    // Auto-crear tipos_tarjeta que no existan
     const localTiposMap = new Map(tiposMap)
     const missingTipos = [...new Set(
-      validRows
-        .map(r => r.tipo_tarjeta)
-        .filter(t => t && !localTiposMap.has(t.toLowerCase()))
+      validRows.map(r => r.tipo_tarjeta).filter(t => t && !localTiposMap.has(t.toLowerCase()))
     )]
-
     for (const desc of missingTipos) {
-      const { data } = await supabase
-        .from('tipos_tarjeta')
-        .insert({ descripcion_tipo: desc })
-        .select('id_tipo_tarjeta')
-        .single()
-      if (data) localTiposMap.set(desc.toLowerCase(), data.id_tipo_tarjeta)
+      const { data: ins, error: insErr } = await supabase
+        .from('tipos_tarjeta').insert({ descripcion_tipo: desc }).select('id_tipo_tarjeta').single()
+      if (ins) {
+        localTiposMap.set(desc.toLowerCase(), ins.id_tipo_tarjeta)
+      } else if (insErr) {
+        const { data: ex } = await supabase
+          .from('tipos_tarjeta').select('id_tipo_tarjeta').ilike('descripcion_tipo', desc).single()
+        if (ex) localTiposMap.set(desc.toLowerCase(), ex.id_tipo_tarjeta)
+        else setUploadError(`Error al crear tipo "${desc}": ${insErr.message}`)
+      }
     }
     if (missingTipos.length > 0) setTiposMap(localTiposMap)
 
-    // Auto-crear inventarios que no existan en la tabla
+    // Auto-crear inventarios que no existan (incluido "sin caja" como fallback)
     const localInventariosMap = new Map(inventariosMap)
-    const missingDuenos = [...new Set(
-      validRows
-        .map(r => r.dueno)
-        .filter(d => d && !localInventariosMap.has(d.toLowerCase()))
-    )]
-
+    const SIN_CAJA = 'sin caja'
+    const duenosEnUso = [...new Set(validRows.map(r => r.dueno || SIN_CAJA))]
+    const missingDuenos = duenosEnUso.filter(d => !localInventariosMap.has(d.toLowerCase()))
     for (const desc of missingDuenos) {
-      const { data } = await supabase
-        .from('inventarios')
-        .insert({ descripcion_inventario: desc })
-        .select('id_inventario')
-        .single()
-      if (data) localInventariosMap.set(desc.toLowerCase(), data.id_inventario)
+      const { data: ins, error: insErr } = await supabase
+        .from('inventarios').insert({ descripcion_inventario: desc }).select('id_inventario').single()
+      if (ins) {
+        localInventariosMap.set(desc.toLowerCase(), ins.id_inventario)
+      } else if (insErr) {
+        const { data: ex } = await supabase
+          .from('inventarios').select('id_inventario').ilike('descripcion_inventario', desc).single()
+        if (ex) localInventariosMap.set(desc.toLowerCase(), ex.id_inventario)
+        else setUploadError(`Error al crear inventario "${desc}": ${insErr.message}`)
+      }
     }
     if (missingDuenos.length > 0) setInventariosMap(localInventariosMap)
 
     // Construir registros para la BD
     const records = validRows.map(row => ({
-      id_tarjeta:     parseInt(row.id_tarjeta),
-      modelo:         row.modelo || null,
-      tipo_tarjeta:   row.tipo_tarjeta ? (localTiposMap.get(row.tipo_tarjeta.toLowerCase()) ?? null) : null,
+      numero_tarjeta: parseInt(row.numero_tarjeta),
+      modelo: row.modelo || null,
+      tipo_tarjeta: row.tipo_tarjeta ? (localTiposMap.get(row.tipo_tarjeta.toLowerCase()) ?? null) : null,
       compatibilidad: row.compatibilidad || null,
-      cantidad:       parseInt(row.cantidad),
-      precio:         parsePrice(row.precio),
-      caja:           row.caja || null,
-      inventario:     row.dueno ? (localInventariosMap.get(row.dueno.toLowerCase()) ?? null) : null,
+      cantidad: parseInt(row.cantidad),
+      precio: parsePrice(row.precio),
+      caja: row.caja || null,
+      inventario: localInventariosMap.get((row.dueno || SIN_CAJA).toLowerCase()) ?? null,
     }))
 
     let ok = 0, failed = 0
@@ -178,9 +181,9 @@ export function UploadPage() {
     for (let i = 0; i < records.length; i += BATCH) {
       const { error } = await supabase
         .from('tarjetas')
-        .upsert(records.slice(i, i + BATCH), { onConflict: 'id_tarjeta' })
+        .upsert(records.slice(i, i + BATCH), { onConflict: 'numero_tarjeta,inventario' })
       if (error) { failed += Math.min(BATCH, records.length - i); setUploadError(error.message) }
-      else         ok    += Math.min(BATCH, records.length - i)
+      else ok += Math.min(BATCH, records.length - i)
     }
 
     setResult({ ok, failed })
@@ -201,9 +204,8 @@ export function UploadPage() {
           onDragOver={(e) => { e.preventDefault(); setDragging(true) }}
           onDragLeave={() => setDragging(false)}
           onDrop={handleDrop}
-          className={`flex flex-col items-center justify-center gap-sm border-2 border-dashed rounded-2xl p-xl cursor-pointer transition-colors ${
-            dragging ? 'border-primary bg-primary/5' : 'border-outline hover:bg-surface-container-low'
-          }`}
+          className={`flex flex-col items-center justify-center gap-sm border-2 border-dashed rounded-2xl p-xl cursor-pointer transition-colors ${dragging ? 'border-primary bg-primary/5' : 'border-outline hover:bg-surface-container-low'
+            }`}
         >
           <span className="material-symbols-outlined text-5xl text-primary">upload_file</span>
           <div className="text-center">
@@ -269,14 +271,14 @@ export function UploadPage() {
                 </thead>
                 <tbody>
                   {rows.map((row, i) => {
-                    const ok  = row.errors.length === 0
+                    const ok = row.errors.length === 0
                     const err = (field: string) => row.errors.includes(field) ? 'text-error font-label-sm' : 'text-on-surface-variant'
                     return (
                       <tr key={i} className={`border-b border-outline-variant last:border-0 ${ok ? '' : 'bg-error-container/20'}`}>
-                        <td className={`px-md py-sm font-body-sm ${err('id')}`}>{row.id_tarjeta || '—'}</td>
+                        <td className={`px-md py-sm font-body-sm ${err('numero')}`}>{row.numero_tarjeta || '—'}</td>
                         <td className="px-md py-sm font-body-sm text-on-surface">{row.modelo || <span className="text-on-surface-variant italic">vacío</span>}</td>
                         <td className="px-md py-sm font-body-sm text-on-surface-variant">{row.tipo_tarjeta || '—'}</td>
-                        <td className="px-md py-sm font-body-sm text-on-surface-variant">{row.dueno || '—'}</td>
+                        <td className="px-md py-sm font-body-sm text-on-surface-variant">{row.dueno || <span className="italic text-on-surface-variant opacity-60">sin caja</span>}</td>
                         <td className="px-md py-sm font-body-sm text-on-surface-variant">{row.caja || '—'}</td>
                         <td className={`px-md py-sm font-body-sm ${err('cantidad')}`}>{row.cantidad || '—'}</td>
                         <td className="px-md py-sm font-body-sm text-on-surface-variant">{row.precio || '—'}</td>

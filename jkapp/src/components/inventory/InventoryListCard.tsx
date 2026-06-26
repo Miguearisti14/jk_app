@@ -24,7 +24,7 @@ export function InventoryListCard({ item, onClick }: InventoryListCardProps) {
             </span>
           </div>
           <p className="font-body-md text-on-surface-variant">{item.subcategory}</p>
-          <p className="font-body-md text-on-surface">${item.price.toFixed(2)}</p>
+          <p className="font-body-md text-on-surface">{item.price != null ? `$${item.price.toFixed(2)}` : '—'}</p>
           <p className="font-body-sm text-on-surface-variant line-clamp-2">{item.compatibility}</p>
         </div>
         <div className="flex justify-between items-end">

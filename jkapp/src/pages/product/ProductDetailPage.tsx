@@ -17,7 +17,7 @@ async function fetchProductDetail(categoryId: CategoryId, productId: string): Pr
   if (categoryId === 'tarjetas') {
     const { data, error } = await supabase
       .from('tarjetas')
-      .select('id_tarjeta, modelo, precio, cantidad, caja, compatibilidad, observaciones, marcas(descripcion_marca), inventarios(descripcion_inventario), tipos_tarjeta(descripcion_tipo)')
+      .select('id_tarjeta, numero_tarjeta, modelo, precio, cantidad, caja, compatibilidad, observaciones, marcas(descripcion_marca), inventarios(descripcion_inventario), tipos_tarjeta(descripcion_tipo)')
       .eq('id_tarjeta', productId)
       .single()
 
@@ -29,6 +29,7 @@ async function fetchProductDetail(categoryId: CategoryId, productId: string): Pr
 
     return {
       id: String(data.id_tarjeta),
+      numero_tarjeta: data.numero_tarjeta,
       name: `${(data.marcas as any)?.descripcion_marca ?? ''} ${data.modelo}`.trim(),
       category: 'tarjetas',
       subcategory: (data.tipos_tarjeta as any)?.descripcion_tipo ?? '',
@@ -186,13 +187,18 @@ export function ProductDetailPage() {
       <main className="max-w-4xl mx-auto pb-8">
 
         <section className="px-margin-mobile pt-lg space-y-xs">
-          {product.subcategory && (
-            <p className="font-label-sm text-primary uppercase tracking-widest">
-              {product.subcategory}
-            </p>
-          )}
+          <div className="flex items-center gap-sm">
+            {product.subcategory && (
+              <p className="font-label-sm text-primary uppercase tracking-widest">
+                {product.subcategory}
+              </p>
+            )}
+            {product.numero_tarjeta != null && (
+              <p className="font-label-sm text-on-surface-variant">· # {product.numero_tarjeta}</p>
+            )}
+          </div>
           <h2 className="font-headline-md text-on-surface">{product.name}</h2>
-          <p className="font-body-md text-on-surface-variant">${product.price.toFixed(2)}</p>
+          <p className="font-body-md text-on-surface-variant">${product.price?.toFixed(2) ?? '—'}</p>
         </section>
 
         <section className="px-margin-mobile mt-lg">
