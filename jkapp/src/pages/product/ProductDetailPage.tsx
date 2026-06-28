@@ -38,6 +38,7 @@ async function fetchProductDetail(categoryId: CategoryId, productId: string): Pr
         shelf: (data.inventarios as any)?.descripcion_inventario ?? '—',
       },
       compatibility,
+      observaciones: data.observaciones ?? undefined,
     }
   }
 
@@ -61,6 +62,7 @@ async function fetchProductDetail(categoryId: CategoryId, productId: string): Pr
       min_threshold: 1,
       smart: data.smart,
       observaciones: data.observaciones,
+      marca: (data.marcas as any)?.descripcion_marca ?? null,
     }
   }
 

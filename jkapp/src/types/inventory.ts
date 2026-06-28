@@ -35,4 +35,5 @@ export interface ProductDetail extends InventoryItem {
   smart?: boolean | null
   observaciones?: string | null
   numero_tarjeta?: string
+  marca?: string | null
 }

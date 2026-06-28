@@ -17,8 +17,6 @@ import { TELEVISOR_INIT, TARJETA_INIT } from '../../types/database'
 export function AddProductPage() {
   const navigate = useNavigate()
 
-  useEffect(() => { window.scrollTo(0, 0) }, [])
-
   const [productType, setProductType] = useState<ProductType | null>(null)
   const [televisorData, setTelevisorData] = useState<TelevisorFormData>(TELEVISOR_INIT)
   const [tarjetaData, setTarjetaData] = useState<TarjetaFormData>(TARJETA_INIT)
@@ -34,16 +32,25 @@ export function AddProductPage() {
 
   useEffect(() => {
     const fetchLookups = async () => {
-      const [marcasRes, estadosRes, jkRes, maxNumeroRes] = await Promise.all([
+      const [marcasRes, estadosRes, maxNumeroRes] = await Promise.all([
         supabase.from('marcas').select('id_marca, descripcion_marca').order('descripcion_marca'),
         supabase.from('estados').select('id_estado, descripcion_estado').order('descripcion_estado'),
-        supabase.from('inventarios').select('id_inventario').ilike('descripcion_inventario', 'JK').single(),
         supabase.from('tarjetas').select('numero_tarjeta').order('numero_tarjeta', { ascending: false }).limit(1).single(),
       ])
       if (marcasRes.data) setMarcas(marcasRes.data as Marca[])
       if (estadosRes.data) setEstados(estadosRes.data as Estado[])
-      if (jkRes.data) setJkInventarioId(jkRes.data.id_inventario)
       if (maxNumeroRes.data) setNextNumero((maxNumeroRes.data.numero_tarjeta as number) + 1)
+
+      // Obtener o crear el inventario "JK"
+      const { data: jkExisting } = await supabase
+        .from('inventarios').select('id_inventario').ilike('descripcion_inventario', 'JK').limit(1).single()
+      if (jkExisting) {
+        setJkInventarioId(jkExisting.id_inventario)
+      } else {
+        const { data: jkNew } = await supabase
+          .from('inventarios').insert({ descripcion_inventario: 'JK' }).select('id_inventario').single()
+        if (jkNew) setJkInventarioId(jkNew.id_inventario)
+      }
     }
     fetchLookups()
   }, [])

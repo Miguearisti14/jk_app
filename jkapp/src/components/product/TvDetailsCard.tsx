@@ -1,5 +1,6 @@
 import { DetailCard } from './DetailCard'
 import { DetailRow } from './DetailRow'
+import { ObservacionesCard } from './ObservacionesCard'
 import type { ProductDetail } from '../../types/inventory'
 
 interface TvDetailsCardProps {
@@ -11,16 +12,16 @@ export function TvDetailsCard({ product }: TvDetailsCardProps) {
   const smartClass = product.smart ? 'text-primary' : undefined
 
   return (
-    <DetailCard icon="tv" title="Ficha técnica">
-      <DetailRow label="Modelo" value={product.sku} />
-      <DetailRow label="Smart TV" value={smartLabel} valueClassName={smartClass} />
-      <DetailRow label="Estado" value={product.subcategory || '—'} />
+    <>
+      <DetailCard icon="tv" title="Ficha técnica">
+        {product.marca && <DetailRow label="Marca" value={product.marca} />}
+        <DetailRow label="Modelo" value={product.sku} />
+        <DetailRow label="Smart TV" value={smartLabel} valueClassName={smartClass} />
+        <DetailRow label="Estado" value={product.subcategory || '—'} />
+      </DetailCard>
       {product.observaciones && (
-        <div className="pt-sm">
-          <p className="font-body-sm text-on-surface-variant mb-xs">Observaciones</p>
-          <p className="font-body-md text-on-surface">{product.observaciones}</p>
-        </div>
+        <ObservacionesCard text={product.observaciones} />
       )}
-    </DetailCard>
+    </>
   )
 }

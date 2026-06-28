@@ -1,6 +1,7 @@
 import { StockLevelCard } from './StockLevelCard'
 import { LocationCard } from './LocationCard'
 import { CompatibilitySection } from './CompatibilitySection'
+import { ObservacionesCard } from './ObservacionesCard'
 import type { ProductDetail } from '../../types/inventory'
 
 interface TarjetaDetailsCardProps {
@@ -21,6 +22,9 @@ export function TarjetaDetailsCard({ product, onQuantityChange }: TarjetaDetails
       )}
       {product.compatibility && (
         <CompatibilitySection models={product.compatibility} />
+      )}
+      {product.observaciones && (
+        <ObservacionesCard text={product.observaciones} />
       )}
     </div>
   )
