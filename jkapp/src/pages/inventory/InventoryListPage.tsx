@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { TopAppBar } from '../../components/layout/TopAppBar'
 import { BottomNavBar } from '../../components/layout/BottomNavBar'
@@ -65,19 +65,24 @@ export function InventoryListPage() {
   const { categoryId } = useParams<{ categoryId: CategoryId }>()
   const navigate = useNavigate()
 
+  const [searchParams, setSearchParams] = useSearchParams()
+  const searchTerm  = searchParams.get('q') ?? ''
+  const activeFilter = searchParams.get('filter') ?? 'Todos'
+  const currentPage  = parseInt(searchParams.get('page') ?? '1')
+  const PAGE_SIZE = 10
+
+  const setSearchTerm  = (v: string) => setSearchParams(p => { const n = new URLSearchParams(p); v ? n.set('q', v) : n.delete('q'); n.set('page', '1'); return n }, { replace: true })
+  const setActiveFilter = (v: string) => setSearchParams(p => { const n = new URLSearchParams(p); v !== 'Todos' ? n.set('filter', v) : n.delete('filter'); n.set('page', '1'); return n }, { replace: true })
+  const setCurrentPage  = (fn: (p: number) => number) => setSearchParams(p => { const n = new URLSearchParams(p); n.set('page', String(fn(parseInt(p.get('page') ?? '1')))); return n }, { replace: true })
+
   const [items, setItems] = useState<InventoryItem[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [searchTerm, setSearchTerm] = useState('')
-  const [activeFilter, setActiveFilter] = useState('Todos')
-  const [currentPage, setCurrentPage] = useState(1)
-  const PAGE_SIZE = 10
 
   useEffect(() => {
     if (!categoryId) return
     setLoading(true)
     setError(null)
-    setActiveFilter('Todos')
     fetchByCategory(categoryId as CategoryId)
       .then(setItems)
       .catch((err) => { console.error('fetchByCategory error:', err); setError('Error al cargar los datos') })
@@ -120,7 +125,7 @@ export function InventoryListPage() {
         }
       />
       <main className="px-margin-mobile pt-md space-y-md pb-md">
-        <SearchBar value={searchTerm} onChange={(v) => { setSearchTerm(v); setCurrentPage(1) }} placeholder="Buscar por nombre o modelo" />
+        <SearchBar value={searchTerm} onChange={setSearchTerm} placeholder="Buscar por nombre o modelo" />
 
         {!loading && filters.length > 1 && (
           <div className="flex overflow-x-auto gap-sm hide-scrollbar py-1">
@@ -129,7 +134,7 @@ export function InventoryListPage() {
                 key={filter}
                 label={filter}
                 isActive={activeFilter === filter}
-                onClick={() => { setActiveFilter(filter); setCurrentPage(1) }}
+                onClick={() => setActiveFilter(filter)}
               />
             ))}
           </div>

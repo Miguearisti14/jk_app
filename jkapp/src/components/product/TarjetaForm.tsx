@@ -1,19 +1,18 @@
 import type { ChangeEvent } from 'react'
-import type { InventarioLookup, Marca, TarjetaFormData } from '../../types/database'
-import { FormField, FormSelect } from '../ui/FormFields'
+import type { TarjetaFormData } from '../../types/database'
+import { FormField } from '../ui/FormFields'
 
 interface TarjetaFormProps {
   data: TarjetaFormData
-  marcas: Marca[]
-  inventarios: InventarioLookup[]
+  nextNumero?: number | null
   onChange: (data: TarjetaFormData) => void
 }
 
-export function TarjetaForm({ data, marcas, inventarios, onChange }: TarjetaFormProps) {
+export function TarjetaForm({ data, nextNumero, onChange }: TarjetaFormProps) {
   const set =
     (field: keyof TarjetaFormData) =>
-    (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
-      onChange({ ...data, [field]: e.target.value })
+      (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
+        onChange({ ...data, [field]: e.target.value })
 
   return (
     <div className="space-y-lg">
@@ -27,16 +26,8 @@ export function TarjetaForm({ data, marcas, inventarios, onChange }: TarjetaForm
         value={data.numero_tarjeta}
         onChange={set('numero_tarjeta')}
         type="number"
-        placeholder="Ej: 42"
+        placeholder={nextNumero != null ? String(nextNumero) : 'Ej: 42'}
         min={1}
-      />
-
-      <FormSelect
-        label="Inventario"
-        value={data.inventario}
-        onChange={set('inventario')}
-        options={inventarios.map((inv) => ({ id: inv.id_inventario, label: inv.descripcion_inventario }))}
-        placeholder="Seleccionar inventario..."
       />
 
       <div className="grid grid-cols-2 gap-sm">
@@ -51,15 +42,7 @@ export function TarjetaForm({ data, marcas, inventarios, onChange }: TarjetaForm
         />
       </div>
 
-      <FormSelect
-        label="Marca"
-        value={data.marca}
-        onChange={set('marca')}
-        options={marcas.map((m) => ({ id: m.id_marca, label: m.descripcion_marca }))}
-        placeholder="Seleccionar marca..."
-      />
-
-      <FormField label="Modelo" value={data.modelo} onChange={set('modelo')} placeholder="Ej: T-CON 55UN7300" />
+      <FormField label="Modelo" value={data.modelo} onChange={set('modelo')} placeholder="Ej: Bn49-..." />
 
       <FormField
         label="Precio"

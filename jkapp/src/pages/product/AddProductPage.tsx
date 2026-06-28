@@ -9,7 +9,6 @@ import type {
   ProductType,
   Marca,
   Estado,
-  InventarioLookup,
   TelevisorFormData,
   TarjetaFormData,
 } from '../../types/database'
@@ -26,7 +25,8 @@ export function AddProductPage() {
 
   const [marcas, setMarcas] = useState<Marca[]>([])
   const [estados, setEstados] = useState<Estado[]>([])
-  const [inventarios, setInventarios] = useState<InventarioLookup[]>([])
+  const [jkInventarioId, setJkInventarioId] = useState<number | null>(null)
+  const [nextNumero, setNextNumero] = useState<number | null>(null)
 
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -34,17 +34,16 @@ export function AddProductPage() {
 
   useEffect(() => {
     const fetchLookups = async () => {
-      const [marcasRes, estadosRes, inventariosRes] = await Promise.all([
+      const [marcasRes, estadosRes, jkRes, maxNumeroRes] = await Promise.all([
         supabase.from('marcas').select('id_marca, descripcion_marca').order('descripcion_marca'),
         supabase.from('estados').select('id_estado, descripcion_estado').order('descripcion_estado'),
-        supabase
-          .from('inventarios')
-          .select('id_inventario, descripcion_inventario')
-          .order('descripcion_inventario'),
+        supabase.from('inventarios').select('id_inventario').ilike('descripcion_inventario', 'JK').single(),
+        supabase.from('tarjetas').select('numero_tarjeta').order('numero_tarjeta', { ascending: false }).limit(1).single(),
       ])
       if (marcasRes.data) setMarcas(marcasRes.data as Marca[])
       if (estadosRes.data) setEstados(estadosRes.data as Estado[])
-      if (inventariosRes.data) setInventarios(inventariosRes.data as InventarioLookup[])
+      if (jkRes.data) setJkInventarioId(jkRes.data.id_inventario)
+      if (maxNumeroRes.data) setNextNumero((maxNumeroRes.data.numero_tarjeta as number) + 1)
     }
     fetchLookups()
   }, [])
@@ -65,12 +64,9 @@ export function AddProductPage() {
 
   const validateTarjeta = (): string | null => {
     if (!tarjetaData.numero_tarjeta || isNaN(parseInt(tarjetaData.numero_tarjeta))) return 'Ingresa el número de tarjeta'
-    if (!tarjetaData.inventario) return 'Selecciona el inventario'
-    if (!tarjetaData.caja || parseInt(tarjetaData.caja) < 0) return 'Ingresa el número de caja'
+    if (!tarjetaData.caja) return 'Ingresa el número de caja'
     if (!tarjetaData.cantidad || parseInt(tarjetaData.cantidad) < 0) return 'Ingresa la cantidad'
-    if (!tarjetaData.marca) return 'Selecciona una marca'
     if (!tarjetaData.modelo.trim()) return 'Ingresa el modelo'
-    if (!tarjetaData.precio || parseFloat(tarjetaData.precio) < 0) return 'Ingresa un precio válido'
     return null
   }
 
@@ -99,12 +95,11 @@ export function AddProductPage() {
       } else {
         const { error: err } = await supabase.from('tarjetas').insert({
           numero_tarjeta: parseInt(tarjetaData.numero_tarjeta),
-          inventario: parseInt(tarjetaData.inventario),
+          inventario: jkInventarioId,
           caja: tarjetaData.caja,
           cantidad: parseInt(tarjetaData.cantidad),
-          marca: parseInt(tarjetaData.marca),
           modelo: tarjetaData.modelo.trim(),
-          precio: parseFloat(tarjetaData.precio),
+          precio: tarjetaData.precio ? parseFloat(tarjetaData.precio) : null,
           compatibilidad: tarjetaData.compatibilidad.trim() || null,
           observaciones: tarjetaData.observaciones.trim() || null,
         })
@@ -148,8 +143,7 @@ export function AddProductPage() {
         {productType === 'tarjeta' && (
           <TarjetaForm
             data={tarjetaData}
-            marcas={marcas}
-            inventarios={inventarios}
+            nextNumero={nextNumero}
             onChange={setTarjetaData}
           />
         )}

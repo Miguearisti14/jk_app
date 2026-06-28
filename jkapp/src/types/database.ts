@@ -26,10 +26,8 @@ export interface TelevisorFormData {
 
 export interface TarjetaFormData {
   numero_tarjeta: string
-  inventario: string
   caja: string
   cantidad: string
-  marca: string
   modelo: string
   precio: string
   compatibilidad: string
@@ -47,10 +45,8 @@ export const TELEVISOR_INIT: TelevisorFormData = {
 
 export const TARJETA_INIT: TarjetaFormData = {
   numero_tarjeta: '',
-  inventario: '',
   caja: '',
   cantidad: '',
-  marca: '',
   modelo: '',
   precio: '',
   compatibilidad: '',

@@ -32,7 +32,7 @@ interface ParsedRow {
 
 // ── helpers ─────────────────────────────────────────────────────────────────
 
-function str(v: unknown)  { return v != null ? String(v).trim() : '' }
+function str(v: unknown) { return v != null ? String(v).trim() : '' }
 function norm(v: unknown) { return v != null ? String(v).trim().toUpperCase() : '' }
 
 function parsePrice(v: unknown): number | null {
@@ -44,13 +44,13 @@ function parsePrice(v: unknown): number | null {
 function parseRows(raw: RawRow[]): ParsedRow[] {
   return raw.map((row) => {
     const numero_tarjeta = str(row['#'])
-    const modelo         = norm(row['NUMERO DE PARTE'])
-    const tipo_tarjeta   = norm(row['PRODUCTO'])
+    const modelo = norm(row['NUMERO DE PARTE'])
+    const tipo_tarjeta = norm(row['PRODUCTO'])
     const compatibilidad = norm(row['COMPATIBILIDADES'])
-    const cantidad       = str(row['U'])
-    const precio         = str(row['PRECIO'])
-    const dueno          = norm(row['DUEÑO'])
-    const caja           = norm(row['CAJA #'])
+    const cantidad = str(row['U'])
+    const precio = str(row['PRECIO'])
+    const dueno = norm(row['DUEÑO'])
+    const caja = norm(row['CAJA #'])
 
     const errors: string[] = []
     if (!numero_tarjeta || isNaN(parseInt(numero_tarjeta))) errors.push('numero')
@@ -148,7 +148,7 @@ export function UploadPage() {
 
     // Auto-crear inventarios que no existan (incluido "sin caja" como fallback)
     const localInventariosMap = new Map(inventariosMap)
-    const SIN_CAJA = 'sin caja'
+    const SIN_CAJA = 'N/A'
     const duenosEnUso = [...new Set(validRows.map(r => r.dueno || SIN_CAJA))]
     const missingDuenos = duenosEnUso.filter(d => !localInventariosMap.has(d.toLowerCase()))
     for (const desc of missingDuenos) {

@@ -13,7 +13,6 @@ export function HomePage() {
       <TopAppBar title="Inventario JK" />
       <main className="px-margin-mobile pt-lg space-y-lg">
         <CategorySection onCategoryClick={(categoryId) => navigate(`/inventory/${categoryId}`)} />
-        <RecentlyAddedSection />
       </main>
       <FloatingActionButton onClick={() => navigate('/products/add')} />
       <BottomNavBar />
