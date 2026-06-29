@@ -1,4 +1,5 @@
 import { useNavigate, useLocation } from 'react-router-dom'
+import { useKeyboardOpen } from '../../hooks/useKeyboardOpen'
 
 type NavItem = {
   id: string
@@ -19,10 +20,15 @@ function getActiveTab(pathname: string): string {
   return 'dashboard'
 }
 
+
 export function BottomNavBar() {
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const activeTab = getActiveTab(pathname)
+  const keyboardOpen = useKeyboardOpen()
+
+
+  if (keyboardOpen) return null
 
   return (
     <nav className="fixed bottom-0 w-full z-50 flex justify-around items-center py-2 px-gutter-mobile bg-surface-container shadow-sm">

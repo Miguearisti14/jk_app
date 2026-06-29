@@ -3,7 +3,6 @@ import { TopAppBar } from '../../components/layout/TopAppBar'
 import { BottomNavBar } from '../../components/layout/BottomNavBar'
 import { FloatingActionButton } from '../../components/ui/FloatingActionButton'
 import { CategorySection } from '../../components/home/CategorySection'
-import { RecentlyAddedSection } from '../../components/home/RecentlyAddedSection'
 
 export function HomePage() {
   const navigate = useNavigate()

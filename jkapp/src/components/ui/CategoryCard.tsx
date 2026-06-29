@@ -26,7 +26,6 @@ export function CategoryCard({ category, onClick }: CategoryCardProps) {
         </div>
         <div>
           <h3 className="font-headline-sm text-on-surface">{category.name}</h3>
-          <p className="font-body-md text-on-surface-variant">{category.itemCount} items available</p>
         </div>
       </div>
     </div>

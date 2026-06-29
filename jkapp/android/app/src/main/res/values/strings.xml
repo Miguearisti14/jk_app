@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">JK App</string>
+    <string name="title_activity_main">JK App</string>
+    <string name="package_name">com.jk.app</string>
+    <string name="custom_url_scheme">com.jk.app</string>
+</resources>

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useKeyboardOpen } from '../../hooks/useKeyboardOpen'
 import { supabase } from '../../lib/supabase'
 import { TopAppBar } from '../../components/layout/TopAppBar'
 import { ProductTypeSelector } from '../../components/product/ProductTypeSelector'
@@ -26,6 +27,7 @@ export function AddProductPage() {
   const [jkInventarioId, setJkInventarioId] = useState<number | null>(null)
   const [nextNumero, setNextNumero] = useState<number | null>(null)
 
+  const keyboardOpen = useKeyboardOpen()
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
@@ -170,39 +172,37 @@ export function AddProductPage() {
         )}
       </main>
 
-      <footer className="fixed bottom-0 w-full bg-surface border-t border-outline-variant p-margin-mobile z-50">
-        <div className="flex flex-col gap-sm">
-          <button
-            onClick={handleSave}
-            disabled={saving || !productType || success}
-            className="w-full h-touch-target-min bg-primary text-on-primary rounded-xl font-label-lg text-label-lg font-bold shadow-sm active:scale-95 transition-all duration-150 flex items-center justify-center gap-sm disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {saving ? (
-              <>
-                <span className="material-symbols-outlined animate-spin">progress_activity</span>
-                Guardando...
-              </>
-            ) : success ? (
-              <>
-                <span className="material-symbols-outlined">check_circle</span>
-                Guardado
-              </>
-            ) : (
-              <>
-                <span className="material-symbols-outlined">save</span>
-                Guardar Producto
-              </>
-            )}
-          </button>
-          <button
-            onClick={() => navigate(-1)}
-            disabled={saving}
-            className="w-full h-touch-target-min bg-transparent text-primary rounded-xl font-label-lg text-label-lg font-bold hover:bg-surface-container-high active:scale-95 transition-all duration-150 disabled:opacity-50"
-          >
-            Cancelar
-          </button>
-        </div>
-      </footer>
+      {!keyboardOpen && <footer className="fixed bottom-0 left-0 right-0 p-margin-mobile z-50 flex flex-col gap-sm">
+        <button
+          onClick={handleSave}
+          disabled={saving || !productType || success}
+          className="w-full h-touch-target-min bg-primary text-on-primary rounded-xl font-label-lg text-label-lg font-bold shadow-lg active:scale-95 transition-all duration-150 flex items-center justify-center gap-sm disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {saving ? (
+            <>
+              <span className="material-symbols-outlined animate-spin">progress_activity</span>
+              Guardando...
+            </>
+          ) : success ? (
+            <>
+              <span className="material-symbols-outlined">check_circle</span>
+              Guardado
+            </>
+          ) : (
+            <>
+              <span className="material-symbols-outlined">save</span>
+              Guardar Producto
+            </>
+          )}
+        </button>
+        <button
+          onClick={() => navigate(-1)}
+          disabled={saving}
+          className="w-full h-touch-target-min bg-surface/80 backdrop-blur text-primary rounded-xl font-label-lg text-label-lg font-bold active:scale-95 transition-all duration-150 disabled:opacity-50"
+        >
+          Cancelar
+        </button>
+      </footer>}
     </div>
   )
 }
